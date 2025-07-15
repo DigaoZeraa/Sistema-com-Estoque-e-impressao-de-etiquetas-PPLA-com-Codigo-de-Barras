@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='prod.css') }}">
+    <title>Cadastro Produto</title>
+    
+    </head>
+<body>  
+       <h1>Cadastrar Produto</h1>
+       <div class="container">
+       <form method="POST">
+       <label for="paciente_id">Cliente:</label>
+       <input list="lista_pacientes" name="paciente_nome" id="paciente" class="inpnome" placeholder="Digite o código do cliente ou a Razão Social" autocomplete="off">
+       <datalist id="lista_pacientes">
+       {% for dados in dados %}
+       <option value="{{ dados[0] }} - {{ dados[1] }}">
+       {% endfor %}
+       </datalist>
+       
+        <br><br>
+        
+        <label for="codigo">Código do Produto:</label>
+        <input type="text" name="codigo" required><br><br>
+
+        <label for="descricao">Descrição:</label>
+        <input type="text" name="descricao" required><br><br>
+
+        <label for="qtde">Qtde de clichês:</label>
+        <input type="text" name="qtde" required><br><br>
+        
+        <label for="clicheria">Clicheria:</label>
+        <input type="text" name="clicheria" required><br><br>
+
+        <label for="os">OS:</label>
+        <input type="text" name="os" required><br><br>
+
+        
+        <label for="data">Data:</label>
+        <input type="date" name="data" required><br><br>
+
+        <input type="submit" value="CADASTRAR ITEM" class="caditem">
+           
+    </form>
+     
+     
+     <a href="{{url_for('index')}}"><Button class="voltar"><strong>VOLTAR A PAGINA INICIAL</strong></Button></a>
+  
+
+</div>
+</body>
+</html>

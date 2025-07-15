@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Produtos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lista_pacientes.css') }}"> 
+    <h1>Produtos por ordem alfabética</h1>  
+</head>
+<body>
+    <form method="GET" action="{{ url_for('lista_prod') }}">
+    <input type="text" name="q" class="buscainp" placeholder="Buscar por descrição ou código">
+    <button type="submit" class="busca">Buscar</button><br><br>
+</form>
+    <a href="{{url_for('index')}}"><Button class="voltar">VOLTAR A PAGINA INICIAL</Button></a>
+    {% for letra, descricao in produtos_por_letra %}
+        <h2>{{ letra }}</h2>
+        <ul>
+                {% for codigo, descricao in descricao %}
+                <p><li2>{{codigo}} - {{ descricao }}</strong><br></p></li2>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</body>
+</html>

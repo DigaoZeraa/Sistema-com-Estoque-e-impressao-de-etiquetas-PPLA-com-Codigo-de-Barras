@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Clientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lista_pacientes.css') }}"> 
+    <h1>Clientes por ordem alfabética</h1>  
+</head>
+<body>
+    <form method="GET" action="{{ url_for('lista_clientes') }}">
+    <input type="text" name="q" class="buscainp" placeholder="Buscar por nome ou código">
+    <button type="submit" class="busca">Buscar</button><br><br>
+</form>
+    <a href="{{url_for('index')}}"><Button class="voltar">VOLTAR A PAGINA INICIAL</Button></a>
+    {% for letra, nomes in pacientes_por_letra %}
+        <h2>{{ letra }}</h2>
+        <ul>    
+                {% for codigo, nome, ncaixa in nomes %}
+                <p><li2>{{codigo}} - {{ nome }} <BR>  CAIXA Nº: <strong>{{ ncaixa }}</strong><br></p></li2>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Movimentação de clichês</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='movstq.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Movimentação de clichês</h1>
+    <form method="POST" action="/movestoque">
+
+      <!-- Campo único para estoque -->
+      <strong><label for="estnome"class="estdest">Destino do clichê:</label></strong>
+      <input list="lista_estoque" class="inpestdest" name="estnome" id="estnome" value="2 - PRODUCAO" autocomplete="off" required><br><br>
+
+      {% for i in range(10) %}
+        <label for="produto_nome_{{ i }}" class="labelprod">ITEM {{ "%02d"%(i + 1)}}:</label>
+        <input list="listaprod" name="produto_nome_{{ i }}" id="produto_nome_{{ i }}" autocomplete="off" class="inpprod">
+        <label for="obs" class="labelobs">OBS:</label>
+        <input type="text" class="obs-mov"  name="obs_mov"><br><br></form>
+      {% endfor %}
+
+      <datalist id="listaprod">
+        {% for p in produtos %}
+          <option value="{{ p['codigo'] }} - {{ p['descricao'] }}"></option>
+        {% endfor %}
+      </datalist>
+
+      <datalist id="lista_estoque">
+        {% for l in locais %}
+          <option value="{{ l['id'] }} - {{ l['desclocal'] }}"></option>
+        {% endfor %}
+      </datalist>
+  
+      <button type="submit" class="submit-btn">Salvar</button><br><br>
+    </form>
+ 
+    <a href="{{ url_for('index') }}">
+      <button class="button2"><strong>VOLTAR À PÁGINA INICIAL</strong></button>
+    </a>
+</div>  
+  <script>
+    function setupAutoTab() {
+      for (let i = 0; i < 10; i++) {
+        const input = document.getElementById('produto_nome_' + i);
+        if (!input) continue;
+        input.addEventListener('input', function () {
+          if (this.value.length >= 6) {
+            const nextInput = document.getElementById('produto_nome_' + (i + 1));
+            if (nextInput) {
+              nextInput.focus();
+            }
+          }
+        });
+      }
+    }
+    window.onload = setupAutoTab;
+  </script>
+</body>
+</html>

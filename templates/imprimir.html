@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='prod.css') }}"> 
+    <title>Re-Impressão de etiqueta</title>
+    </head>
+    <form action="/imprimir" method="POST">
+    </form>
+    </head>
+    <body>
+        <div class="container2">
+       <form method="POST">
+       <strong><label> Selecione o item para re-imprimir a etiqueta:</label></h3></strong><br><br>
+       <input list="lista_prod" name="produto_nome" id="paciente" class="inpnome" placeholder="Digite o código do produto ou a Descrição" autocomplete="off">
+       <datalist id="lista_prod">
+       {% for dadosprod in dadosprod %}
+       <option value="{{ dadosprod[0] }} - {{ dadosprod[1] }}">
+       {% endfor %}
+       </datalist>
+
+    <!-- Campos adicionais, se necessário -->
+    <input type="hidden" name="codigo" value="">
+    <input type="hidden" name="nome" value="">
+    <input type="hidden" name="codigo_produto" value="">
+    <input type="hidden" name="descricao" value="">
+    <input type="hidden" name="os" value="">
+    <input type="hidden" name="clicheria" value="">
+    <input type="hidden" name="ncaixa" value="">
+    <input type="hidden" name="qtde" value="">
+    <input type="hidden" name="data" value="">
+
+    <button type="submit" class="caditem">Imprimir Etiqueta</button>
+</form>
+
+          
+     <a href="{{url_for('index')}}"><Button class="voltar"><strong>VOLTAR A PAGINA INICIAL</strong></Button></a>
+  
+
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de clientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='novo_paciente.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Adicionar Novo cliente</h1>
+        <form action="{{ url_for('novo_cliente') }}" method="POST">
+
+            <label for="cnpj">Cnpj:</label>
+            <input type="text" id="cnpj" name="cnpj" required><br><br>
+
+            <label for="codigo">Codigo:</label>
+            <input type="number" id="codigo" name="codigo"  class="codigo"><br><br>
+
+            <label for="nome">Razão Social:</label>
+            <input type="text" id="nome" name="nome" required><br><br>
+
+            <label for="ncaixa">Número da Caixa:</label>
+            <input type="text" id="ncaixa" name="ncaixa" required><br><br>
+
+
+            <input type="submit" value="ADICIONAR NOVO CLIENTE" class="submit-btn">
+        </form>
+         <a href="{{url_for('index')}}"><Button class="voltar"><strong>VOLTAR A PAGINA INICIAL</strong></Button></a>
+    </div>
+   
+</body>
+
+</html>
