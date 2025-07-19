@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Melhorias</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='prod.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='cadastro.png') }}">
+</head>
+<body>
+    <h1>Cadastrar melhorias para próxima produção</h1><br><br>
+    <form method="post">
+        <div class="container99">
+    <strong><label>Selecione o item:</label></strong><br><br>
+    <input list="lista_prod" name="produto_nome" id="paciente" class="inpnome" placeholder="Digite o código do produto ou a Descrição" autocomplete="off">
+                <datalist id="lista_prod">
+                {% for dadosprod in dadosprod %}
+                <option value="{{ dadosprod [0] }} - {{ dadosprod [1] }}">
+                {% endfor %}
+                </datalist><br><br>
+
+        <label for="melhorias_qualidade">Melhorias:</label><br>
+        <textarea name="melhorias_qualidade" rows="8" cols="100"></textarea><br><br>
+
+        <button type="submit" class="caditem">Enviar</button>
+    </form>
+    </div><br><br>
+    <a href="{{url_for('index')}}"><button class="voltar2"><strong>VOLTAR À PÁGINA INICIAL</strong></button></a>
+</body>
+</html>

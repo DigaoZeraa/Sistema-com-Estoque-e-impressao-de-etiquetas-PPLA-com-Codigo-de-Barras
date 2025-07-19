@@ -1,13 +1,95 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='prod.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='cadastro.png') }}">
     <title>Cadastro Produto</title>
     
     </head>
+      <style>
+
+    /* MENU PRINCIPAL */
+    .menu {
+      background-color: #210177;
+      
+    }
+
+    .menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      
+    }
+
+    .menu ul li {
+      position: relative;
+    }
+
+    .menu ul li a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      align-items: center;
+      
+    }
+
+    .menu ul li:hover {
+      background-color: #210177;
+    }
+
+    /* SUBMENU */
+    .menu ul li ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #0415ac;
+      min-width: 160px;
+      z-index: 1000;
+      flex-direction: column;
+    }
+
+    .menu ul li ul li a {
+      padding: 12px;
+      white-space: nowrap;
+    }
+
+    .menu ul li:hover ul {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu ul li ul li a:hover {
+      background-color: #210177;
+    }
+  </style>
+</head>
+<body>
+<div class="menu">
+  <ul>
+    <li>
+      <a href="#">Cadastro</a>
+      <ul>
+        <li><a href="{{url_for('cadastro_produto')}}">Cadastrar Item</a></li>
+        <li><a href="{{url_for('cadastro_caixa')}}">Cadastrar Caixa ao cliente</a></li>
+        <li><a href="{{url_for('novo_cliente')}}">Cadastrar Cliente</a></li>
+      </ul>
+          <li>
+      <a href="#">Movimentação</a>
+      <ul>
+        <li><a href="{{url_for('movestoque')}}">Movimentar Itens</a></li>
+        <li><a href="{{url_for('imprimir_etq')}}">Re-Imprimir Etiqueta de Itens e cadastar sequencia de caixa</a></li>
+      </ul>
+    </li>
+    <li><a href="{{url_for('lista_clientes')}}">Listar Clientes / Buscar caixa</a></li>
+    <li><a href="{{url_for('melhorias')}}">Melhorias para próxima produção</a></li>
+  </ul>
+</div><br>
 <body>  
-       <h1>Cadastrar Produto</h1>
+       <h1>Cadastrar Produto</h1><br>
        <div class="container">
        <form method="POST">
        <label for="paciente_id">Cliente:</label>
@@ -20,28 +102,31 @@
        
         <br><br>
         
-        <label for="codigo">Código do Produto:</label>
-        <input type="text" name="codigo" required><br><br>
+        <label for="codigo">Código do Produto / Versão:</label>
+        <input type="text" name="codigo"placeholder="Ex: 101884/1" required><br>
 
         <label for="descricao">Descrição:</label>
-        <input type="text" name="descricao" required><br><br>
+        <input type="text" name="descricao" placeholder="Ex: PICOLE LIMAO - V1, NÃO USAR CARACTERES ESPECIAS EX: Ç ~ ´"required><br>
 
         <label for="qtde">Qtde de clichês:</label>
-        <input type="text" name="qtde" required><br><br>
+        <input type="text" name="qtde" required><br>
         
         <label for="clicheria">Clicheria:</label>
-        <input type="text" name="clicheria" required><br><br>
+        <input type="text" name="clicheria" value="BLUMENAU"><br>
 
         <label for="os">OS:</label>
-        <input type="text" name="os" required><br><br>
-
+        <input type="text" name="os" placeholder="Código da OS da clicheria" required><br>
+        
+        <label for="seq_caixa">Sequencia de Caixa:</label>
+        <input type="text" name="seq_caixa" value="1" required><br>
         
         <label for="data">Data:</label>
-        <input type="date" name="data" required><br><br>
+        <input type="date" name="data" placeholder="SYSDATE"><br>
+
 
         <input type="submit" value="CADASTRAR ITEM" class="caditem">
            
-    </form>
+    </form><br>
      
      
      <a href="{{url_for('index')}}"><Button class="voltar"><strong>VOLTAR A PAGINA INICIAL</strong></Button></a>

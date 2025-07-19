@@ -4,7 +4,89 @@
   <meta charset="UTF-8">
   <title>Movimentação de clichês</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='movstq.css') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='movestoque.png') }}">
 </head>
+  <style>
+
+    /* MENU PRINCIPAL */
+    .menu {
+      background-color: #210177;
+      
+    }
+
+    .menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      
+    }
+
+    .menu ul li {
+      position: relative;
+    }
+
+    .menu ul li a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      align-items: center;
+      
+    }
+
+    .menu ul li:hover {
+      background-color: #210177;
+    }
+
+    /* SUBMENU */
+    .menu ul li ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #0415ac;
+      min-width: 160px;
+      z-index: 1000;
+      flex-direction: column;
+    }
+
+    .menu ul li ul li a {
+      padding: 12px;
+      white-space: nowrap;
+    }
+
+    .menu ul li:hover ul {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu ul li ul li a:hover {
+      background-color: #210177;
+    }
+  </style>
+</head>
+<body>
+<div class="menu">
+  <ul>
+    <li>
+      <a href="#">Cadastro</a>
+      <ul>
+        <li><a href="{{url_for('cadastro_produto')}}">Cadastrar Item</a></li>
+        <li><a href="{{url_for('cadastro_caixa')}}">Cadastrar Caixa ao cliente</a></li>
+        <li><a href="{{url_for('novo_cliente')}}">Cadastrar Cliente</a></li>
+      </ul>
+          <li>
+      <a href="#">Movimentação</a>
+      <ul>
+        <li><a href="{{url_for('movestoque')}}">Movimentar Itens</a></li>
+        <li><a href="{{url_for('imprimir_etq')}}">Re-Imprimir Etiqueta de Itens e cadastar sequencia de caixa</a></li>
+      </ul>
+    </li>
+    <li><a href="{{url_for('lista_clientes')}}">Listar Clientes / Buscar caixa</a></li>
+    <li><a href="{{url_for('melhorias')}}">Melhorias para próxima produção</a></li>
+  </ul>
+</div><br>
 
 <body>
   <div class="container">
@@ -13,13 +95,13 @@
 
       <!-- Campo único para estoque -->
       <strong><label for="estnome"class="estdest">Destino do clichê:</label></strong>
-      <input list="lista_estoque" class="inpestdest" name="estnome" id="estnome" value="2 - PRODUCAO" autocomplete="off" required><br><br>
+      <input list="lista_estoque" class="inpestdest" name="estnome" id="estnome" autocomplete="off" required><br><br>
 
       {% for i in range(10) %}
         <label for="produto_nome_{{ i }}" class="labelprod">ITEM {{ "%02d"%(i + 1)}}:</label>
         <input list="listaprod" name="produto_nome_{{ i }}" id="produto_nome_{{ i }}" autocomplete="off" class="inpprod">
-        <label for="obs" class="labelobs">OBS:</label>
-        <input type="text" class="obs-mov"  name="obs_mov"><br><br></form>
+        <label for="obs_mov_{{ i }}" class="labelobs">OBS:</label>
+        <input type="text" class="obs-mov"  name="obs_mov_{{ i }}"><br><br>
       {% endfor %}
 
       <datalist id="listaprod">
@@ -47,7 +129,7 @@
         const input = document.getElementById('produto_nome_' + i);
         if (!input) continue;
         input.addEventListener('input', function () {
-          if (this.value.length >= 6) {
+          if (this.value.length >= 8) {
             const nextInput = document.getElementById('produto_nome_' + (i + 1));
             if (nextInput) {
               nextInput.focus();

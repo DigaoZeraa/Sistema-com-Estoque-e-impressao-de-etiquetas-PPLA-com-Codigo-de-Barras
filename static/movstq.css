@@ -15,6 +15,7 @@ body{
      flex-grow: 1;
      max-width: 300px;
      box-sizing: border-box;
+     
 }
 .labelprod{
     font-weight: bold;
@@ -22,11 +23,12 @@ body{
     flex-shrink: 0;
 }
 .estdest{
-        margin-left: 165px;
+        margin-left: 130px;
         font-size: 25px;
 }
 .inpestdest{
         padding: 5px 10px;
+        
         
 }
 .container{
@@ -36,7 +38,9 @@ body{
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0, 0.1);
     height: 90vh;
-    width: 100vh;
+    width: 105vh;
+    display:block;
+    margin: 0 auto;
 }
 
 h1{
@@ -57,6 +61,8 @@ h1{
     font-weight: bold;
     font-size: 20px;
     margin-left: 190px;
+    display:block;
+    margin: 0 auto;
 }
 .button2 {
     padding: 10px 20px;
@@ -69,4 +75,6 @@ h1{
     transition: background-color 0.3s;
     cursor: pointer;
     margin-left: 230px;
+    display:block;
+    margin: 0 auto;
 }

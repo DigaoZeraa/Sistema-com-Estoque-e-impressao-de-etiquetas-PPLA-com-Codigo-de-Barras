@@ -1,8 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response
+﻿from flask import Flask, render_template, request, redirect, url_for, make_response
 import sqlite3
 from collections import defaultdict
 import win32print
 import win32ui
+import tkinter as tk
+from tkinter import simpledialog
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 app = Flask(__name__)
 
 conn = sqlite3.connect('gestao_cliches.db')
@@ -162,20 +168,20 @@ def cadastro_produto():
         clicheria = request.form['clicheria']
         qtde = request.form['qtde']
         data = request.form['data']
-
+        seq_caixa = request.form['seq_caixa']
         cursor.execute('''
-            INSERT INTO produtos (codigo_cliente, codigo, descricao, os, clicheria, qtde, data)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (codigo_cliente, codigo, descricao, os, clicheria, qtde, data))
+            INSERT INTO produtos (codigo_cliente, codigo, descricao, os, clicheria, qtde, data, seq_caixa)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (codigo_cliente, codigo, descricao, os, clicheria, qtde, data, seq_caixa))
         id = cursor.lastrowid
         cursor.execute('''
-            INSERT INTO estoque (item, obs, cod_local)
-            VALUES(?, ?, 'Cliche novo '||?, ?)
-                       ''',(codigo,clicheria, 1)) 
+            INSERT INTO estoque (item, obs, cod_local,data)
+            VALUES(?, 'Cliche novo - '||?, ?, ?)
+                       ''',(codigo,clicheria, 2,data)) 
         cursor.execute('''
-            INSERT INTO movestoque (item, obs, cod_local)
-            VALUES(?, ?, 'Cliche novo '||?, ?)
-                       ''',(codigo, data, 1))   
+            INSERT INTO movestoque (item, data, obs_mov, cod_local)
+            VALUES(?, ?, 'Cliche novo - '||?, ?)
+                       ''',(f"{codigo} - {descricao}", data, clicheria, 2))   
         conn.commit()
         print(">>> ID inserido:", id)
         buscar_e_imprimir_atual(id)
@@ -187,13 +193,11 @@ def cadastro_produto():
     conn.close()
     return render_template('cadastro_produto.html', dados=dados)
 
-def imprimir_etiqueta_ppla(codigo_cliente, nome_cliente, codigo, descricao, os, clicheria, caixa, qtde, data): 
+def imprimir_etiqueta_ppla(codigo_cliente, nome_cliente, codigo, descricao, os, clicheria, caixa, qtde, data, seq_caixa): 
     data_formatada = f"{data[8:10]}/{data[5:7]}/{data[2:4]}"
     etiqueta = f"""
 
 L
-^XA
-^CI28^FS
 m
 e
 K1504
@@ -201,15 +205,14 @@ def imprimir_etiqueta_ppla(codigo_cliente, nome_cliente, codigo, descricao, os, 
 C0005
 H12D11
 m
-131100004000070"{codigo_cliente}-{nome_cliente[:39]}"
-131100003200180
-131100003200070"{codigo}-{descricao}"
-131100000200065Clicheria:{clicheria}
-131100000200500OS:{os}
-131100000200720Data: {data_formatada}
-14110000230200QTDE:{qtde}
-141100001350100Caixa: {caixa}
-1E5200001000650{codigo}
+111100004000070{codigo_cliente}-{nome_cliente[:39]}
+111100003200070{codigo}-{descricao}
+121100002350200QTDE:{qtde}
+111100001000040Clicheria:{clicheria}
+111100000200100OS:{os}
+111100000200500Data: {data_formatada}
+121100001600050Caixa: {caixa} - {seq_caixa}
+1E3100001000650{codigo}
 Q0001
 E
 
@@ -221,7 +224,7 @@ E
     try:
         win32print.StartDocPrinter(hprinter, 1, ("Etiqueta PPLA", None, "RAW"))
         win32print.StartPagePrinter(hprinter)
-        win32print.WritePrinter(hprinter, etiqueta.encode('windows-1252'))
+        win32print.WritePrinter(hprinter, etiqueta.encode('utf8'))
         win32print.EndPagePrinter(hprinter)
         win32print.EndDocPrinter(hprinter)
     finally:
@@ -231,7 +234,7 @@ E
 def buscar_e_imprimir_atual(id_produto):
     conn = sqlite3.connect('gestao_cliches.db')
     cur = conn.cursor()
-    cur.execute("SELECT p.codigo_cliente, c.nome, p.codigo, p.descricao, p.os, p.clicheria, c.ncaixa, p.qtde, p.data FROM produtos p join clientes c ON p.codigo_cliente = c.codigo WHERE id = ?", (id_produto,))
+    cur.execute("SELECT p.codigo_cliente, c.nome, p.codigo, p.descricao, p.os, p.clicheria, c.ncaixa, p.qtde, p.data, p.seq_caixa FROM produtos p join clientes c ON p.codigo_cliente = c.codigo WHERE id = ?", (id_produto,))
     dados = cur.fetchone()
     conn.close()
     print(">>> Resultado da busca:", dados) 
@@ -253,22 +256,26 @@ def imprimir_etq():
             return "Código do cliente inválido", 400
 
         codigo = produto_nome.split(" - ")[0].strip()
-
+        seq_caixa = request.form.get('seq_caixa')
+        cursor.execute('''
+            UPDATE produtos
+            SET seq_caixa = ?
+            WHERE codigo = ?
+                ''', (seq_caixa, codigo))
+        conn.commit()
         buscar_e_imprimir(codigo)
-
+  
     cursor.execute('SELECT codigo, descricao FROM produtos ORDER BY descricao')
     dadosprod = cursor.fetchall()
     conn.close()
-
+    conn.commit
     return render_template('imprimir.html', dadosprod=dadosprod)
 
-def imprimir_etq(codigo_cliente, nome_cliente, codigo, descricao, os, clicheria, caixa, qtde, data): 
+def imprimir_etq(codigo_cliente, nome_cliente, codigo, descricao, os, clicheria, caixa, qtde, data, seq_caixa): 
     data_formatada = f"{data[8:10]}/{data[5:7]}/{data[2:4]}" 
     etiqueta = f"""
-
+   
 L
-^XA
-^CI28^FS
 m
 e
 K1504
@@ -276,19 +283,19 @@ def imprimir_etq(codigo_cliente, nome_cliente, codigo, descricao, os, clicheria,
 C0005
 H12D11
 m
-131100004000070"{codigo_cliente}-{nome_cliente[:39]}"
-131100003200180
-131100003200070"{codigo}-{descricao}"
-131100000200065Clicheria:{clicheria}
-131100000200500OS:{os}
-131100000200720Data: {data_formatada}
-14110000230200QTDE:{qtde}
-141100001350100Caixa: {caixa}
-1E5200001000650{codigo}
+111100004000050{codigo_cliente}-{nome_cliente[:39]}
+111100003200050{codigo}-{descricao}
+121100002350100QTDE:{qtde}
+111100001000040Clicheria:{clicheria}
+111100000200100OS:{os}
+111100000200500Data: {data_formatada}
+121100001600050Caixa: {caixa} - {seq_caixa}
+1E3100001000650{codigo}
 Q0001
 E
-
 """
+
+    etiqueta_cp850 = etiqueta.encode("cp850")
 
     nome_impressora = win32print.GetDefaultPrinter()
     hprinter = win32print.OpenPrinter(nome_impressora)
@@ -296,7 +303,7 @@ E
     try:
         win32print.StartDocPrinter(hprinter, 1, ("Etiqueta PPLA", None, "RAW"))
         win32print.StartPagePrinter(hprinter)
-        win32print.WritePrinter(hprinter, etiqueta.encode('windows-1252'))
+        win32print.WritePrinter(hprinter, etiqueta_cp850)
         win32print.EndPagePrinter(hprinter)
         win32print.EndDocPrinter(hprinter)
     finally:
@@ -306,7 +313,7 @@ def buscar_e_imprimir(id_produtos):
     conn = sqlite3.connect('gestao_cliches.db')
     cur = conn.cursor()
 
-    cur.execute("SELECT p.codigo_cliente, c.nome, p.codigo, p.descricao, p.os, p.clicheria, c.ncaixa, p.qtde, p.data FROM produtos p join clientes c ON p.codigo_cliente = c.codigo WHERE p.codigo = ?", (id_produtos,))
+    cur.execute("SELECT p.codigo_cliente, c.nome, p.codigo, p.descricao, p.os, p.clicheria, c.ncaixa, p.qtde, p.data, p.seq_caixa FROM produtos p join clientes c ON p.codigo_cliente = c.codigo WHERE p.codigo = ?", (id_produtos,))
     dados = cur.fetchone()
     conn.close()
     if dados:
@@ -349,7 +356,7 @@ def movestoque():
     conn = sqlite3.connect('gestao_cliches.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-
+    produtos_enviados = []
     if request.method == 'POST':
         estnome = request.form.get('estnome')
         if estnome:
@@ -357,48 +364,153 @@ def movestoque():
         else:
             cod_local = None
         for i in range(10):
-            obs_mov = request.form['obs_mov']
+            obs_mov = request.form[f'obs_mov_{i}']
             produto_nome = request.form.get(f'produto_nome_{i}')
+      
+            
             # Ignora se estiver vazio
             if not produto_nome or not estnome:
                 continue
-
+            
             try:
                 produto_codigo = produto_nome.split(" - ")[0].strip()
-                
+                cursor.execute('SELECT melhorias_qualidade FROM produtos WHERE codigo = ?', (produto_codigo,))
+                result = cursor.fetchone()
+         
+                melhorias_qualidade = result[0] if result else None
+                print(f"[DADOS] produto_codigo={produto_codigo}, melhorias_qualidade={melhorias_qualidade}")
 
+                if cod_local == "2" and melhorias_qualidade:
+                    produtos_enviados.append(produto_codigo)
+                
                 # Grava a movimentação
                 cursor.execute('''
                     INSERT INTO movestoque (item, cod_local, data, obs_mov)
                     VALUES (?, ?, datetime('now', '-3 hours'), ?)
-                ''', (produto_codigo, cod_local, obs_mov))
+                ''', (produto_nome,cod_local, obs_mov))
 
-                # Atualiza estoque
-                cursor.execute('''
-                    UPDATE estoque
-                    SET cod_local = ?, obs = ?
-                    WHERE item = ?
-                ''', (cod_local, obs_mov, produto_codigo))
+                             # Atualiza estoque ou deleta dependendo do local
+                if cod_local == "4":
+                        cursor.execute('DELETE FROM estoque WHERE item = ?', (produto_codigo,))
+                        cursor.execute('DELETE FROM produtos WHERE codigo = ?', (produto_codigo,))           
+                else:
+                    cursor.execute('''
+                        UPDATE estoque
+                        SET cod_local = ?, obs = ?
+                        WHERE item = ?
+                    ''', (cod_local, obs_mov, produto_codigo))
+
             except Exception as e:
-                print(f"Erro ao processar linha {i}: {e}")  # Para debug no terminal
-
-               
+                print(f"Erro ao processar linha {i}: {e}")  # Log para debug       
         conn.commit()
+        
+        if cod_local == "2" and produtos_enviados:
+         print("[DEBUG FINAL] Produtos a enviar:", produtos_enviados)
+         buscar_e_enviar(produtos_enviados)
+
         conn.close()
+        
         return redirect('/movestoque')
 
     # GET → carrega os dados
     cursor.execute('SELECT codigo, descricao FROM produtos ORDER BY descricao')
     produtos = cursor.fetchall()
+    
 
-    cursor.execute('SELECT id, desclocal FROM locais ORDER BY desclocal')
+    cursor.execute('SELECT id, desclocal FROM locais ORDER BY id')
     locais = cursor.fetchall()
+     
 
     conn.close()
     return render_template('movestoque.html', produtos=produtos, locais=locais)
+  
+def buscar_e_enviar(lista_codigos):
+    if not lista_codigos:
+        print("Nenhum código informado para envio.")
+        return
+
+    # Conecta ao banco SQLite
+    conn = sqlite3.connect('gestao_cliches.db')
+    cursor = conn.cursor()
+
+    # Cria os placeholders (?, ?, ?, ..., ?)
+    placeholders = ','.join(['?'] * len(lista_codigos))
+    query = f'''
+        SELECT codigo, descricao, melhorias_qualidade
+        FROM produtos
+        WHERE codigo IN ({placeholders})
+    '''
+    cursor.execute(query, lista_codigos)
+    resultados = cursor.fetchall()
+    conn.close()
+
+    if not resultados:
+        print("Nenhum resultado encontrado para os códigos informados.")
+        return
+
+    # Monta corpo do e-mail
+    corpo_email = "<h2>Relatório de Melhorias</h2><ul>"
+    for codigo, descricao, melhorias in resultados:
+        corpo_email += f"<li>{codigo} - {descricao} - {melhorias}</li>"
+    corpo_email += "</ul>"
+
+    # Configurações do e-mail
+    remetente = "xxx@google.com"
+    senha = "asdfg"
+    destinatario = "xxx@google.com"
+
+    # Usa o primeiro item como parte do assunto
+    assunto = f"Melhorias - {resultados[0][0]} - {resultados[0][1]}"
+
+    # Monta e-mail
+    msg = MIMEMultipart()
+    msg['From'] = remetente
+    msg['To'] = destinatario
+    msg['Subject'] = assunto
+    msg.attach(MIMEText(corpo_email, 'html'))
+    #configurar o email aqui
+    try:
+        with smtplib.SMTP_SSL() as servidor:
+            servidor.login(remetente, senha)
+            servidor.send_message(msg)
+        print("E-mail enviado com sucesso!")
+    except Exception as e:
+        print(f"Erro ao enviar e-mail: {e}")
 
 
 
+
+@app.route('/melhorias', methods=['GET', 'POST'])
+def melhorias():
+    conn = sqlite3.connect('gestao_cliches.db')
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        produto_nome = request.form.get('produto_nome')
+        if not produto_nome or " - " not in produto_nome:
+            conn.close()
+            return "Código do produto inválido", 400
+
+        codigo = produto_nome.split(" - ")[0].strip()
+        melhorias_qualidade = request.form.get('melhorias_qualidade')
+        cursor.execute('''
+            UPDATE produtos
+            SET melhorias_qualidade = ?
+            WHERE codigo = ?
+                ''', (melhorias_qualidade, codigo))
+        conn.commit()
+
+        return redirect('/melhorias')
+    
+    cursor.execute('SELECT codigo, descricao FROM produtos ORDER BY descricao')
+    dadosprod = cursor.fetchall()
+    conn.close()
+    conn.commit
+    
+    return render_template('melhorias.html', dadosprod=dadosprod)
+    
+
+    
         
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

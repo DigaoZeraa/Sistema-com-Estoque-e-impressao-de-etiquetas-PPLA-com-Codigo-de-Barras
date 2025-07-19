@@ -5,9 +5,13 @@
     <meta charset="UTF-8">
     <title>Lista de Clientes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='lista_pacientes.css') }}"> 
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='lista.png') }}">
     <h1>Clientes por ordem alfabética</h1>  
 </head>
+
 <body>
+    
+    <div>
     <form method="GET" action="{{ url_for('lista_clientes') }}">
     <input type="text" name="q" class="buscainp" placeholder="Buscar por nome ou código">
     <button type="submit" class="busca">Buscar</button><br><br>
@@ -21,5 +25,6 @@
             {% endfor %}
         </ul>
     {% endfor %}
+    </div>
 </body>
 </html>

@@ -5,9 +5,10 @@
    text-align: center;
 }
 h1{ text-align: center;
-    margin-left: -3cm;
-    justify-content: center;  /* Centraliza horizontalmente */
-    align-items: center;      /* Centraliza verticalmente */
+    justify-content: center;  
+    align-items: center;     
+    display:block;
+    margin: 0 auto;
 }
 
 .container{
@@ -21,8 +22,9 @@ h1{ text-align: center;
     align-items: center;
     height: 90vh;
     width: 130vh;
-    margin-left: 5cm;
     font-weight: bold;
+    display:block;
+    margin: 0 auto;
 }
 
 .container4{
@@ -36,44 +38,62 @@ h1{ text-align: center;
     align-items: center;
     height: 60vh;
     width: 130vh;
-    margin-left: 5cm;
+    display:block;
+    margin: 0 auto;
 }
-.container4 label{
-    font-weight: bold;
-    text-align: right;
-    padding-top: 6px;
-    align-items: center;
-    /*margin-right: 5cm*/
-}
+
 .container4 input[type="text"]{
     padding: 6px;
     width:  100%;
     align-items: center;
     text-align: center;
+    display:block;
+    margin: 0 auto;
 }
 .container4 label{
     font-weight: bold;
     text-align: right;
     padding-top: 6px;
     align-items: center;
-    /*margin-right: 5cm*/
+    font-size: 20px;
 }
 .container input[type="text"]{
     padding: 6px;
     width:  100%;
     align-items: center;
     text-align: center;
+    display:block;
+    margin: 0 auto;
 }
 .container input[type="date"]{
     padding: 6px;
     width:  100%;
     align-items: center;
     text-align: center;
+    display:block;
+    margin: 0 auto;
 }
 body{
     background-color: #f2f2f2;
     font-family: Arial, sans-serif;
     /*height: 100vh;*/
+}
+
+.container99{
+    text-align: center;
+    background-color: #f2f2f2;
+    padding: 50px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+    width: 130vh;
+    margin-left: 5cm;
+    font-weight: bold;
+    display:block;
+    margin: 0 auto;
 }
 
 .lista_paciente{
@@ -102,6 +122,23 @@ body{
     border-radius: 5px;
     transition: background-color 0.3s;
 }
+
+.voltar2 {
+    background-color: #210177;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    display:block;
+    margin: 0 auto;
+}
 .caditem {
     background-color: #046804;
     border: none;
@@ -116,19 +153,22 @@ body{
     border-radius: 5px;
     font-weight: bold;
     transition: background-color 0.3s;
+    display:block;
+    margin: 0 auto;
 }
 .container2{
     text-align: center;
-    background-color: #fff;
+    background-color: #f2f2f2;
     padding: 50px;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
     justify-content: center;
     align-items: center;
-    height: 30vh;
+    height: 60vh;
     width: 130vh;
-    margin-left: 5cm;
+    display:block;
+    margin: 0 auto;
 }
 .container2 label{
     font-weight: bold;

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='home.png') }}">
+</head>
+<body>
+     <div class="container">
+        <h2>Total de clientes:</h2>
+
+            <h1><strong>{{ total_clientes }}</strong></h1><br><br>
+            <h2>Total de caixas cadastradas:</h2>
+            <h1><strong>{{ totaldecaixa }}</strong></h1>
+
+        <a href="{{url_for('novo_cliente')}}"><Button class="add-patient"><strong>Adicionar novo cliente</strong></Button></a>
+        <a href="{{url_for('cadastro_caixa')}}"><Button class="list-patient"><strong>Cadastrar Caixa</strong></Button></a>
+        <a href="{{url_for('cadastro_produto')}}"><Button class="add-patient"><strong>Adicionar novo item</strong></Button></a><br>
+        <a href="{{url_for('lista_clientes')}}"><Button class="list-patient2"><strong>Lista de clientes</strong></Button></a>
+        <a href="{{url_for('imprimir_etq')}}"><Button class="list-patient"><strong>Re-Imprimir etiquetas</strong></Button></a><br>
+        <a href="{{url_for('movestoque')}}"><Button class="list-patient"><strong>Movimentar cliches</strong></Button></a>
+        <a href="{{url_for('melhorias')}}"><Button class="list-patient"><strong>Melhorias p/ cliches</strong></Button></a>
+     </div>
+</body>
